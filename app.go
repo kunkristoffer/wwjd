@@ -24,7 +24,7 @@ func main() {
 		r.ParseForm()
 		question := r.FormValue("question")
 		response := "You asked: " + question // Replace with AI logic
-		templ.Handler(index.Index(question, response)).ServeHTTP(w, r)
+		templ.Handler(index.IndexPage(question, response)).ServeHTTP(w, r)
 	})
 
 	// Other pages

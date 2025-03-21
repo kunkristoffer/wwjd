@@ -23,6 +23,12 @@ jobs:
       - name: Verify Go version
         run: go version
 
+      - name: Install Templ
+        run: go install github.com/a-h/templ/cmd/templ@latest
+
+      - name: Generate Templ files
+        run: templ generate
+
       - name: Tidy (optional cleanup)
         run: go mod tidy
 

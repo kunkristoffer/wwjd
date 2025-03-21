@@ -2,8 +2,7 @@ name: Go Build Check
 
 on:
   pull_request:
-    branches:
-      - development
+    branches: [development, main]
 
 jobs:
   build:

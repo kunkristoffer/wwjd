@@ -3,35 +3,34 @@ package main
 import (
 	"net/http"
 
+	"github.com/a-h/templ"
+	"github.com/go-chi/chi/v5"
+
 	"github.com/kunkristoffer/wwjd/pages/best"
 	"github.com/kunkristoffer/wwjd/pages/disclaimer"
 	"github.com/kunkristoffer/wwjd/pages/index"
 	"github.com/kunkristoffer/wwjd/pages/vote"
-
-	"github.com/a-h/templ"
 )
 
 func main() {
-	// Root page with optional form handling
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			r.ParseForm()
-			question := r.FormValue("question")
-			// Replace this with real AI call later
-			response := "You asked: " + question
-			templ.Handler(index.Index(question, response)).ServeHTTP(w, r)
-			return
-		}
+	r := chi.NewRouter()
 
-		// GET: show empty form
-		templ.Handler(index.Index("", "")).ServeHTTP(w, r)
+	// Home page + POST form
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(index.IndexPage("", "")).ServeHTTP(w, r)
 	})
 
-	// Static pages
-	http.Handle("/best", templ.Handler(best.BestQuestions()))
-	http.Handle("/vote", templ.Handler(vote.VotePage()))
-	http.Handle("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()))
+	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		question := r.FormValue("question")
+		response := "You asked: " + question // Replace with AI logic
+		templ.Handler(index.IndexPage(question, response)).ServeHTTP(w, r)
+	})
 
-	// Start the server
-	http.ListenAndServe(":8080", nil)
+	// Other pages
+	r.Get("/best", templ.Handler(best.BestQuestions()).ServeHTTP)
+	r.Get("/vote", templ.Handler(vote.VotePage()).ServeHTTP)
+	r.Get("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()).ServeHTTP)
+
+	http.ListenAndServe(":8080", r)
 }

@@ -1,8 +1,10 @@
 package disclaimer
 
+import "github.com/kunkristoffer/wwjd/layouts"
+
 templ disclaimerPage() {
-    @base("Best Questions This Week", content: {
-        <h1>Disclaimer</h1>
-        <p>Coming soon...</p>
-    })
+	@layouts.Base("Best Questions This Week") {
+		<h1>Disclaimer</h1>
+		<p>Coming soon...</p>
+	}
 }

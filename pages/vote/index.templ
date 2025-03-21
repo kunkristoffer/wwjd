@@ -1,9 +1,12 @@
+package vote
+
+import "github.com/kunkristoffer/wwjd/layouts"
+
 templ votePage() {
-    <html>
-        <head><title>Vote on Questions</title></head>
-        <body>
-            <h1>🗳️ Vote on Questions</h1>
-            <p>Voting feature coming soon...</p>
-        </body>
-    </html>
+	@layouts.Base("Best Questions This Week") {
+		<main>
+			<h1>Submit your vote!</h1>
+			<p>Coming soon...</p>
+		</main>
+	}
 }

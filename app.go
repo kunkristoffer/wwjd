@@ -1,33 +1,36 @@
 package main
 
 import (
-	"embed"
-	"html/template"
-	"log"
 	"net/http"
-	"os"
+
+	"github.com/a-h/templ"
+	"github.com/go-chi/chi/v5"
+
+	"github.com/kunkristoffer/wwjd/pages/best"
+	"github.com/kunkristoffer/wwjd/pages/disclaimer"
+	"github.com/kunkristoffer/wwjd/pages/index"
+	"github.com/kunkristoffer/wwjd/pages/vote"
 )
 
-//go:embed templates/*
-var resources embed.FS
-
-var t = template.Must(template.ParseFS(resources, "templates/*"))
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	r := chi.NewRouter()
 
-	}
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := map[string]string{
-			"Region": os.Getenv("FLY_REGION"),
-		}
-
-		t.ExecuteTemplate(w, "index.html.tmpl", data)
+	// Home page + POST form
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(index.IndexPage("", "")).ServeHTTP(w, r)
 	})
 
-	log.Println("listening on", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		question := r.FormValue("question")
+		response := "You asked: " + question // Replace with AI logic
+		templ.Handler(index.IndexPage(question, response)).ServeHTTP(w, r)
+	})
+
+	// Other pages
+	r.Get("/best", templ.Handler(best.BestQuestions()).ServeHTTP)
+	r.Get("/vote", templ.Handler(vote.VotePage()).ServeHTTP)
+	r.Get("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()).ServeHTTP)
+
+	http.ListenAndServe(":8080", r)
 }

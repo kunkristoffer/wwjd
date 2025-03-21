@@ -1,37 +1,39 @@
 package main
 
 import (
-	"embed"
-	"html/template"
-	"log"
 	"net/http"
-	"os"
+
+	"github.com/kunkristoffer/wwjd/pages/best"
+	"github.com/kunkristoffer/wwjd/pages/disclaimer"
+	"github.com/kunkristoffer/wwjd/pages/index"
+	"github.com/kunkristoffer/wwjd/pages/vote"
 
 	"github.com/a-h/templ"
 )
 
-//go:embed templates/*
-var resources embed.FS
-
-var t = template.Must(template.ParseFS(resources, "templates/*"))
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-
-	}
-
+	// Root page with optional form handling
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := map[string]string{
-			"Region": os.Getenv("FLY_REGION"),
+		if r.Method == http.MethodPost {
+			r.ParseForm()
+			question := r.FormValue("question")
+			// Replace this with real AI call later
+			response := "You asked: " + question
+			templ.Handler(index.Index(question, response)).ServeHTTP(w, r)
+			return
 		}
 
-		t.ExecuteTemplate(w, "index.html.tmpl", data)
+		// GET: show empty form
+		templ.Handler(index.Index("", "")).ServeHTTP(w, r)
 	})
 
-	log.Println("listening on", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	// Static pages
+	http.Handle("/best", templ.Handler(best.BestQuestions()))
+	http.Handle("/vote", templ.Handler(vote.VotePage()))
+	http.Handle("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()))
+
+	// Start the server
+	http.ListenAndServe(":8080", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

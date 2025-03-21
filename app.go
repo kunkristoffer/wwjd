@@ -5,6 +5,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
+
 	"github.com/kunkristoffer/wwjd/pages/best"
 	"github.com/kunkristoffer/wwjd/pages/disclaimer"
 	"github.com/kunkristoffer/wwjd/pages/index"

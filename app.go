@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/a-h/templ"
 )
 
 //go:embed templates/*
@@ -30,4 +32,9 @@ func main() {
 
 	log.Println("listening on", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	component := templates.Index("hello", "world")
+	templ.Handler(component).ServeHTTP(w, r)
 }

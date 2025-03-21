@@ -17,7 +17,7 @@ func main() {
 
 	// Home page + POST form
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		templ.Handler(index.Index("", "")).ServeHTTP(w, r)
+		templ.Handler(index.IndexPage("", "")).ServeHTTP(w, r)
 	})
 
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {

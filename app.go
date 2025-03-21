@@ -1,12 +1,10 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/kunkristoffer/wwjd/pages/best"
-	"github.com/kunkristoffer/wwjd/pages/disclaimer"
 	"github.com/kunkristoffer/wwjd/pages/index"
-	"github.com/kunkristoffer/wwjd/pages/vote"
 
 	"github.com/a-h/templ"
 )
@@ -27,16 +25,6 @@ func main() {
 		templ.Handler(index.Index("", "")).ServeHTTP(w, r)
 	})
 
-	// Static pages
-	http.Handle("/best", templ.Handler(best.BestQuestions()))
-	http.Handle("/vote", templ.Handler(vote.VotePage()))
-	http.Handle("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()))
-
-	// Start the server
-	http.ListenAndServe(":8080", nil)
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	component := templates.Index("hello", "world")
-	templ.Handler(component).ServeHTTP(w, r)
+	log.Println("listening on", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

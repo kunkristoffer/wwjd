@@ -1,2 +1,7 @@
+# Ignore binaries
 *.exe
+data/*
+
+# Ignore templ files
 *_templ.go
+*_templ.txt

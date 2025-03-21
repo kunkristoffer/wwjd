@@ -5,30 +5,28 @@ import "github.com/kunkristoffer/wwjd/layouts"
 templ IndexPage(userInput string, response string) {
 	@layouts.Base("WWJD Chatbot") {
 		<main style="max-width: 600px; margin: auto; padding: 2rem;">
-      <h1>🙏 What Would Jesus Do?</h1>
-      <form method="POST" action="/" style="margin-top: 1rem;">
-        <input
-          type="text"
-          name="question"
-          placeholder="Ask a question..."
-          value="{{ userInput }}"
-          required
-          style="width: 100%; padding: 0.5rem; font-size: 1rem;"
-        />
-        <button type="submit" style="margin-top: 0.5rem; padding: 0.5rem 1rem;">
-          Ask
-        </button>
-      </form>
-
-      {{ if userInput != "" }}
-        <section style="margin-top: 2rem;">
-          <h3>Your Question:</h3>
-          <p>{{ userInput }}</p>
-
-          <h3>Response:</h3>
-          <p>{{ response }}</p>
-        </section>
-      {{ end }}
-    </main>
+			<h1>🙏 What Would Jesus Do?</h1>
+			<form method="POST" action="/" style="margin-top: 1rem;">
+				<input
+					type="text"
+					name="question"
+					placeholder="Ask a question..."
+					value="{{ userInput }}"
+					required
+					style="width: 100%; padding: 0.5rem; font-size: 1rem;"
+				/>
+				<button type="submit" style="margin-top: 0.5rem; padding: 0.5rem 1rem;">
+					Ask
+				</button>
+			</form>
+			if (userInput != "") {
+				<section style="margin-top: 2rem;">
+					<h3>Your Question:</h3>
+					<p>{ userInput }</p>
+					<h3>Response:</h3>
+					<p>{ response }</p>
+				</section>
+			}
+		</main>
 	}
 }

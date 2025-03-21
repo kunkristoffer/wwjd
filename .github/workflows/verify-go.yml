@@ -1,32 +1,29 @@
-name: Validate PR from Development & Build
+name: Go Build Check
 
 on:
   pull_request:
     branches:
-      - main
+      - development
 
 jobs:
-  validate-and-build:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Check that PR is from development branch
-        run: |
-          echo "PR source branch: ${{ github.head_ref }}"
-          if [[ "${{ github.head_ref }}" != "development" ]]; then
-            echo "❌ Only pull requests from 'development' to 'main' are allowed."
-            exit 1
-          fi
-        shell: bash
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 1  # speeds up CI
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: '1.21' # adjust to your Go version
 
-      - name: Tidy dependencies
+      - name: Verify Go version
+        run: go version
+
+      - name: Tidy (optional cleanup)
         run: go mod tidy
 
       - name: Build the project

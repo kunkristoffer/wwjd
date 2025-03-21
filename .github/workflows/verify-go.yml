@@ -1,0 +1,29 @@
+name: Check Go Build
+
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  build:
+    name: Build Go Project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24' # adjust to your Go version
+
+      - name: Verify Go version
+        run: go version
+
+      - name: Tidy dependencies
+        run: go mod tidy
+
+      - name: Build the project
+        run: go build ./...

@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100svh;
+}
+
+main {
+  flex: 1;
+  width: clamp(320px, 100%, 1280px);
+}

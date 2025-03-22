@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"os"
 	"time"
 
@@ -11,12 +12,13 @@ import (
 
 var DB *sql.DB
 
-func InitDB(path string) error {
+func InitDB() error {
 	var err error
 	primaryUrl := os.Getenv("TURSO_URL")
-	authToken := os.Getenv("TURSO_key")
+	authToken := os.Getenv("TURSO_KEY")
 
 	url := fmt.Sprintf(`libsql://%s.turso.io?authToken=%s`, primaryUrl, authToken)
+	slog.Info(url)
 	DB, err = sql.Open("libsql", url)
 	if err != nil {
 		return fmt.Errorf("failed to open db %s: %v", url, err)

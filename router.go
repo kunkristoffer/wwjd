@@ -81,7 +81,44 @@ func New() http.Handler {
 		templ.Handler(best.BestQuestions(prompts)).ServeHTTP(w, r)
 	})
 
-	r.Get("/vote", templ.Handler(vote.VotePage()).ServeHTTP)
+	r.Get("/vote", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 10")
+		if err != nil {
+			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var prompts []models.Prompt
+		for rows.Next() {
+			var p models.Prompt
+			err := rows.Scan(&p.ID, &p.Question, &p.Reply, &p.Votes)
+			if err != nil {
+				http.Error(w, "Scan error: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			prompts = append(prompts, p)
+		}
+
+		templ.Handler(vote.VotePage(prompts)).ServeHTTP(w, r)
+	})
+
+	r.Post("/vote", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		id := r.FormValue("id")
+
+		_, err := database.DB.Exec("UPDATE prompts SET votes = votes + 1 WHERE id = ?", id)
+		if err != nil {
+			http.Error(w, "Failed to register vote", http.StatusInternalServerError)
+			return
+		}
+
+		slog.Info("Prompt saved", slog.String("question", id))
+
+		// Redirect to refresh the list
+		http.Redirect(w, r, "/vote", http.StatusSeeOther)
+	})
+
 	r.Get("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()).ServeHTTP)
 
 	return r

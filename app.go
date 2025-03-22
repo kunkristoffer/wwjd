@@ -27,9 +27,9 @@ func main() {
 	router.Handle("/assets/*", http.StripPrefix("/assets/", fs))
 
 	// Home page + POST form
-	/* router.Get("/", func(w http.ResponseWriter, router *http.Request) {
-		templ.Handler(index.IndexPage("", "")).ServeHTTP(w, router)
-	}) */
+	router.Get("/", func(w http.ResponseWriter, router *http.Request) {
+		templ.Handler(index.IndexPage("", models.ChatResponse{})).ServeHTTP(w, router)
+	})
 
 	router.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()

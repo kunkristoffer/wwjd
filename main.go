@@ -26,7 +26,7 @@ func main() {
 			slog.Info("Error creating data folder")
 		}
 	}
-	database.InitDB("data/prompts.db")
+	database.InitDB("/var/lib/litefs/wwjd.db")
 
 	// Start server
 	addr := ":8080"

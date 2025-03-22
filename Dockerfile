@@ -10,8 +10,11 @@ RUN go build -v -o /run-app .
 FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  ca-certificates && \
+  ca-certificates fuse3 sqlite3 && \
   rm -rf /var/lib/apt/lists/*
+
+COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
+ENTRYPOINT litefs mount
 
 COPY --from=builder /run-app /usr/local/bin/
 CMD ["run-app"]

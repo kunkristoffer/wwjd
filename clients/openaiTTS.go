@@ -12,7 +12,7 @@ func GenerateSpeech(text string) ([]byte, error) {
 	payload := map[string]string{
 		"model": "tts-1",
 		"input": text,
-		"voice": "fable", // or fable/echo
+		"voice": "onyx",
 	}
 	body, _ := json.Marshal(payload)
 

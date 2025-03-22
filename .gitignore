@@ -5,3 +5,6 @@ data/*
 # Ignore templ files
 *_templ.go
 *_templ.txt
+
+# Ignore env
+.env

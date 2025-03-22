@@ -7,7 +7,6 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
-	"github.com/gorilla/sessions"
 	openai "github.com/kunkristoffer/wwjd/clients"
 	"github.com/kunkristoffer/wwjd/database"
 	"github.com/kunkristoffer/wwjd/models"
@@ -16,9 +15,10 @@ import (
 	"github.com/kunkristoffer/wwjd/pages/index"
 	"github.com/kunkristoffer/wwjd/pages/tired"
 	"github.com/kunkristoffer/wwjd/pages/vote"
+	"github.com/kunkristoffer/wwjd/sessions"
 )
 
-func New(store *sessions.CookieStore) http.Handler {
+func New() http.Handler {
 	r := chi.NewRouter()
 
 	// Serve static files
@@ -33,7 +33,7 @@ func New(store *sessions.CookieStore) http.Handler {
 	// POST form
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
 		// Get counter from session
-		session, _ := store.Get(r, "chat-session")
+		session, _ := sessions.ChatStore.Get(r, "chat-session")
 		count := 0
 		if v, ok := session.Values["ask_count"].(int); ok {
 			count = v
@@ -126,7 +126,7 @@ func New(store *sessions.CookieStore) http.Handler {
 		id := r.FormValue("id")
 
 		// Get session
-		session, _ := store.Get(r, "vote-session")
+		session, _ := sessions.VoteStore.Get(r, "vote-session")
 		voted := session.Values["voted"]
 
 		// Check if user has already voted

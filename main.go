@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,6 +20,13 @@ func main() {
 	openai.Init()
 
 	// Init db
+	path := "data"
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			slog.Info("Error creating data folder")
+		}
+	}
 	database.InitDB("data/prompts.db")
 
 	// Init session

@@ -27,6 +27,7 @@ templ IndexPage(userInput string, response models.ChatResponse) {
 					<p>{ userInput }</p>
 					<h3>Svar:</h3>
 					<p style="margin-bottom: 2rem;">{ response.Message }</p>
+          <a href="/">Lurer du på noe mer? spør i vei</a>
 				</section>
 			}
 			if response.AudioURL != "" {

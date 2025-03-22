@@ -6,15 +6,19 @@ import (
 	"os"
 
 	openai "github.com/kunkristoffer/wwjd/clients"
+	"github.com/kunkristoffer/wwjd/database"
 )
 
 func main() {
 	// Init logger
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
 	// Init OpenAI client
 	openai.Init()
+
+	// Init db
+	database.InitDB("data/prompts.db")
 
 	// Start server
 	addr := ":8080"

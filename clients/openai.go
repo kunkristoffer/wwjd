@@ -16,13 +16,15 @@ var Client *openai.Client
 
 func Init() {
 	// Load .env file
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("❌ Error loading .env file")
+	if os.Getenv("FLY_APP_NAME") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			fmt.Println("❌ Error loading .env file")
+		}
 	}
-
 	apiKey := os.Getenv("OPENAI_API_KEY")
 
+	// Client init
 	Client = openai.NewClient(apiKey)
 }
 

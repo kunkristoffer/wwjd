@@ -7,6 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/sessions"
 	openai "github.com/kunkristoffer/wwjd/clients"
 	"github.com/kunkristoffer/wwjd/database"
 	"github.com/kunkristoffer/wwjd/models"
@@ -16,7 +17,7 @@ import (
 	"github.com/kunkristoffer/wwjd/pages/vote"
 )
 
-func New() http.Handler {
+func New(store *sessions.CookieStore) http.Handler {
 	r := chi.NewRouter()
 
 	// Serve static files
@@ -107,13 +108,31 @@ func New() http.Handler {
 		r.ParseForm()
 		id := r.FormValue("id")
 
+		// Get session
+		session, _ := store.Get(r, "vote-session")
+		voted := session.Values["voted"]
+
+		// Check if user has already voted
+		if voted == true {
+			slog.Info("User has already voted", slog.String("id", id))
+			http.Redirect(w, r, "/vote", http.StatusSeeOther)
+			return
+		} else {
+			session.Values["voted"] = true
+			err := session.Save(r, w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
 		_, err := database.DB.Exec("UPDATE prompts SET votes = votes + 1 WHERE id = ?", id)
 		if err != nil {
 			http.Error(w, "Failed to register vote", http.StatusInternalServerError)
 			return
 		}
 
-		slog.Info("Prompt saved", slog.String("question", id))
+		slog.Info("Voted!", slog.String("question", id))
 
 		// Redirect to refresh the list
 		http.Redirect(w, r, "/vote", http.StatusSeeOther)

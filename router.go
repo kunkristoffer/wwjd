@@ -14,6 +14,7 @@ import (
 	"github.com/kunkristoffer/wwjd/pages/best"
 	"github.com/kunkristoffer/wwjd/pages/disclaimer"
 	"github.com/kunkristoffer/wwjd/pages/index"
+	"github.com/kunkristoffer/wwjd/pages/tired"
 	"github.com/kunkristoffer/wwjd/pages/vote"
 )
 
@@ -31,6 +32,22 @@ func New(store *sessions.CookieStore) http.Handler {
 
 	// POST form
 	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		// Get counter from session
+		session, _ := store.Get(r, "chat-session")
+		count := 0
+		if v, ok := session.Values["ask_count"].(int); ok {
+			count = v
+		}
+
+		// Increment counter and check if above 10
+		count++
+		session.Values["ask_count"] = count
+		session.Save(r, w)
+		if count >= 10 {
+			http.Redirect(w, r, "/tired", http.StatusSeeOther)
+			return
+		}
+
 		r.ParseForm()
 		question := r.FormValue("question")
 
@@ -139,6 +156,6 @@ func New(store *sessions.CookieStore) http.Handler {
 	})
 
 	r.Get("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()).ServeHTTP)
-
+	r.Get("/tired", templ.Handler(tired.TiredPage()).ServeHTTP)
 	return r
 }

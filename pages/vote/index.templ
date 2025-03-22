@@ -1,12 +1,22 @@
 package vote
 
+import "github.com/kunkristoffer/wwjd/models"
 import "github.com/kunkristoffer/wwjd/layouts"
+import "strconv"
 
-templ VotePage() {
-	@layouts.Base("Best Questions This Week") {
-		<main>
-			<h1>Submit your vote today!!</h1>
-			<p>Coming soon...</p>
+templ VotePage(prompts []models.Prompt) {
+	@layouts.Base("Vote on Prompts") {
+		<main style="max-width: 800px; margin: auto; padding: 2rem;">
+			<h1>📮 Vote on Questions</h1>
+			for _, p := range prompts {
+				<form method="POST" action="/vote" style="margin-bottom: 2rem;">
+					<input type="hidden" name="id" value={ strconv.Itoa(p.ID) }/>
+					<p><strong>Q:</strong> { p.Question }</p>
+					<p><strong>A:</strong> { p.Reply }</p>
+					<p><small>Votes: { strconv.Itoa(p.Votes) }</small></p>
+					<button type="submit">👍 Upvote</button>
+				</form>
+			}
 		</main>
 	}
 }

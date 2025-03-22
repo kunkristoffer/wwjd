@@ -1,10 +1,26 @@
 package best
 
 import "github.com/kunkristoffer/wwjd/layouts"
+import "github.com/kunkristoffer/wwjd/models"
+import "strconv"
 
-templ BestQuestions() {
+templ BestQuestions(prompts []models.Prompt) {
 	@layouts.Base("Best Questions This Week") {
-		<h1>🔥 Best Questions This Week</h1>
-		<p>Coming soon...</p>
+		<main style="max-width: 800px; margin: auto; padding: 2rem;">
+			<h1>🌟 Top Voted Questions</h1>
+			if len(prompts) == 0 {
+				<p>No questions yet!</p>
+			} else {
+				<ul>
+					for _, prompt := range prompts {
+						<li style="margin-bottom: 1rem;">
+							<p><strong>Q:</strong> { prompt.Question }</p>
+							<p><strong>A:</strong> { prompt.Reply }</p>
+							<p><small>Votes: { strconv.Itoa(prompt.Votes) } | Asked: { prompt.DateAsked }</small></p>
+						</li>
+					}
+				</ul>
+			}
+		</main>
 	}
 }

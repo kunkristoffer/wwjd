@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
-
 	openai "github.com/kunkristoffer/wwjd/clients"
+	"github.com/kunkristoffer/wwjd/database"
 	"github.com/kunkristoffer/wwjd/models"
 	"github.com/kunkristoffer/wwjd/pages/best"
 	"github.com/kunkristoffer/wwjd/pages/disclaimer"
@@ -44,12 +45,80 @@ func New() http.Handler {
 			return
 		}
 
+		_, errDB := database.DB.Exec(
+			"INSERT INTO prompts (question, reply) VALUES (?, ?)",
+			question,
+			chatResp.Message,
+		)
+		if errDB != nil {
+			slog.Error("DB insert failed", slog.String("error", errDB.Error()))
+		}
+
+		slog.Info("Prompt saved", slog.String("question", question))
+
 		templ.Handler(index.IndexPage(question, chatResp)).ServeHTTP(w, r)
 	})
 
 	// Other pages
-	r.Get("/best", templ.Handler(best.BestQuestions()).ServeHTTP)
-	r.Get("/vote", templ.Handler(vote.VotePage()).ServeHTTP)
+	r.Get("/best", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := database.DB.Query("SELECT id, date_asked, question, reply, votes FROM prompts ORDER BY votes DESC LIMIT 10")
+		if err != nil {
+			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var prompts []models.Prompt
+		for rows.Next() {
+			var p models.Prompt
+			err := rows.Scan(&p.ID, &p.DateAsked, &p.Question, &p.Reply, &p.Votes)
+			if err != nil {
+				http.Error(w, "Failed to parse row: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			prompts = append(prompts, p)
+		}
+		templ.Handler(best.BestQuestions(prompts)).ServeHTTP(w, r)
+	})
+
+	r.Get("/vote", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 10")
+		if err != nil {
+			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var prompts []models.Prompt
+		for rows.Next() {
+			var p models.Prompt
+			err := rows.Scan(&p.ID, &p.Question, &p.Reply, &p.Votes)
+			if err != nil {
+				http.Error(w, "Scan error: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			prompts = append(prompts, p)
+		}
+
+		templ.Handler(vote.VotePage(prompts)).ServeHTTP(w, r)
+	})
+
+	r.Post("/vote", func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		id := r.FormValue("id")
+
+		_, err := database.DB.Exec("UPDATE prompts SET votes = votes + 1 WHERE id = ?", id)
+		if err != nil {
+			http.Error(w, "Failed to register vote", http.StatusInternalServerError)
+			return
+		}
+
+		slog.Info("Prompt saved", slog.String("question", id))
+
+		// Redirect to refresh the list
+		http.Redirect(w, r, "/vote", http.StatusSeeOther)
+	})
+
 	r.Get("/disclaimer", templ.Handler(disclaimer.DisclaimerPage()).ServeHTTP)
 
 	return r

@@ -5,27 +5,36 @@ import "github.com/kunkristoffer/wwjd/models"
 
 templ IndexPage(userInput string, response models.ChatResponse) {
 	@layouts.Base("Hva ville jesus gjort") {
-		<main style="max-width: 600px; margin: auto; padding: 2rem;">
+		<main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
 			<h1>🙏 Hva ville jesus gjort? 🙏</h1>
-			<form method="POST" action="/" style="margin-top: 1rem;">
-				<input
-					type="text"
-					name="question"
-					placeholder="Hva lurer du på i dag..."
-					required
-					style="width: 100%; padding: 0.5rem; font-size: 1rem;"
-				/>
-				<button type="submit" style="margin-top: 0.5rem; padding: 0.5rem 1rem;">
-					Spør
-				</button>
-			</form>
+			if (response.Message == "") {
+				<form method="POST" action="/" style="margin-top: 1rem;">
+					<input
+						type="text"
+						name="question"
+						placeholder="Hva lurer du på i dag..."
+						required
+						style="width: 100%; padding: 0.5rem; font-size: 1rem;"
+					/>
+					<button type="submit" style="margin-top: 0.5rem; padding: 0.5rem 1rem;">
+						Spør
+					</button>
+				</form>
+			}
 			if (userInput != "") {
 				<section style="margin-top: 2rem;">
-          <h3>Spørsmål:</h3>
+					<h3>Spørsmål:</h3>
 					<p>{ userInput }</p>
 					<h3>Svar:</h3>
-					<p>{ response.Message }</p>
+					<p style="margin-bottom: 2rem;">{ response.Message }</p>
+          <a href="/">Lurer du på noe mer? spør i vei</a>
 				</section>
+			}
+			if response.AudioURL != "" {
+				<audio controls autoplay>
+					<source src={ response.AudioURL } type="audio/mpeg"/>
+					Din nettleser støtter ikke lydavspilling.
+				</audio>
 			}
 		</main>
 	}

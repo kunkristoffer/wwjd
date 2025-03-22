@@ -6,6 +6,7 @@
 
 body {
   display: flex;
+  flex-flow: column nowrap;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -14,5 +15,15 @@ body {
 
 main {
   flex: 1;
+  display: flex;
+  flex-flow: column nowrap;
   width: clamp(320px, 100%, 1280px);
+}
+
+a {
+  color: #1d1d1d;
+  text-decoration: none;
+}
+a:hover {
+  color: #4d4d4d;
 }

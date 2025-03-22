@@ -2,6 +2,9 @@
 *.exe
 /data
 
+# Ignore generated media files
+*.mp3
+
 # Ignore templ files
 *_templ.go
 *_templ.txt

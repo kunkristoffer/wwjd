@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
@@ -73,6 +76,15 @@ func New() http.Handler {
 		}
 
 		slog.Info("Prompt saved", slog.String("question", question))
+
+		// TTS
+		responseText := chatResp.Message
+		audioBytes, err := openai.GenerateSpeech(responseText) // 🆕 write this helper
+		if err == nil {
+			filename := fmt.Sprintf("assets/audio/%d.mp3", time.Now().UnixNano())
+			os.WriteFile(filename, audioBytes, 0644)
+			chatResp.AudioURL = "/" + filename // serve via static assets
+		}
 
 		templ.Handler(index.IndexPage(question, chatResp)).ServeHTTP(w, r)
 	})

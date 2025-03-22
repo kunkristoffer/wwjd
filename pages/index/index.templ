@@ -21,10 +21,16 @@ templ IndexPage(userInput string, response models.ChatResponse) {
 			</form>
 			if (userInput != "") {
 				<section style="margin-top: 2rem;">
-          <h3>Spørsmål:</h3>
+					<h3>Spørsmål:</h3>
 					<p>{ userInput }</p>
 					<h3>Svar:</h3>
 					<p>{ response.Message }</p>
+					if response.AudioURL != "" {
+						<audio controls autoplay>
+							<source src={ response.AudioURL } type="audio/mpeg"/>
+							Din nettleser støtter ikke lydavspilling.
+						</audio>
+					}
 				</section>
 			}
 		</main>

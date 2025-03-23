@@ -1,5 +1,7 @@
 ARG GO_VERSION=1
-FROM golang:${GO_VERSION}-bookworm as builder
+FROM golang:${GO_VERSION}-bookworm AS builder
+
+RUN apt-get update -y && apt-get install -y ca-certificates fuse3 sqlite3
 
 WORKDIR /usr/src/app
 COPY go.mod go.sum ./
@@ -8,8 +10,6 @@ COPY . .
 RUN go build -v -o /run-app .
 
 FROM debian:bookworm
-
-RUN apt-get update -y && apt-get install -y ca-certificates fuse3 sqlite3
-
 COPY --from=builder /run-app /usr/local/bin/
+
 CMD ["run-app"]

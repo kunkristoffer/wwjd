@@ -66,16 +66,28 @@ func New() http.Handler {
 			return
 		}
 
-		_, errDB := database.DB.Exec(
-			"INSERT INTO prompts (question, reply) VALUES (?, ?)",
+		// Check if reply already exists, prevents dup on reload, fix tba
+		var exists bool
+		err = database.DB.QueryRow(
+			"SELECT EXISTS(SELECT 1 FROM prompts WHERE question = ? LIMIT 1)",
 			question,
-			chatResp.Message,
-		)
-		if errDB != nil {
-			slog.Error("DB insert failed", slog.String("error", errDB.Error()))
+		).Scan(&exists)
+		if err != nil {
+			slog.Error("DB check failed", slog.String("error", err.Error()))
+		} else if !exists {
+			_, errDB := database.DB.Exec(
+				"INSERT INTO prompts (question, reply) VALUES (?, ?)",
+				question,
+				chatResp.Message,
+			)
+			if errDB != nil {
+				slog.Error("DB insert failed", slog.String("error", errDB.Error()))
+			} else {
+				slog.Info("Prompt saved", slog.String("question", question))
+			}
+		} else {
+			slog.Info("Reply already exists, skipping insert", slog.String("reply", chatResp.Message))
 		}
-
-		slog.Info("Prompt saved", slog.String("question", question))
 
 		// TTS
 		responseText := chatResp.Message
@@ -112,7 +124,7 @@ func New() http.Handler {
 	})
 
 	r.Get("/vote", func(w http.ResponseWriter, r *http.Request) {
-		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 10")
+		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 3")
 		if err != nil {
 			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
 			return

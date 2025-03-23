@@ -5,18 +5,26 @@ import "github.com/kunkristoffer/wwjd/layouts"
 import "strconv"
 
 templ VotePage(prompts []models.Prompt) {
-	@layouts.Base("Vote on Prompts") {
-		<main style="max-width: 800px; margin: auto; padding: 2rem;">
-			<h1>📮 Vote on Questions</h1>
-			for _, p := range prompts {
-				<form method="POST" action="/vote" style="margin-bottom: 2rem;">
-					<input type="hidden" name="id" value={ strconv.Itoa(p.ID) }/>
-					<p><strong>Q:</strong> { p.Question }</p>
-					<p><strong>A:</strong> { p.Reply }</p>
-					<p><small>Votes: { strconv.Itoa(p.Votes) }</small></p>
-					<button type="submit">👍 Upvote</button>
-				</form>
-			}
-		</main>
-	}
+@layouts.Base("Vote on Prompts") {
+  <main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
+    <h1 style="text-align: center;">Jesus vill høre din stemmerett</h1>
+    <p>Her er 5 tilfeldige spørsmål fra vår menighet, stem fram den du ønsker jesus skal se nærmere på. Etterpå får du noen nye</p>
+    for _, p := range prompts {
+    <form method="POST" action="/vote"
+      style="position: relative; display: flex; gap: 1rem; padding: 2rem; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;">
+      <input type="hidden" name="id" value={ strconv.Itoa(p.ID) } />
+      <div style="display: flex; flex-flow: column nowrap; justify-content: center;">
+        <button type="submit" title="Tought and prayers" style="padding: 2px;">+1 🙏</button>
+      </div>
+      <div style="display: flex; flex-flow: column nowrap; gap: 1rem;">
+        <i>{ p.Question }</i>
+        <p>{ p.Reply }</p>
+      </div>
+      <span style="position: absolute; display: flex; justify-content: center; align-items: center; top: 0; right: 0; width: 36px; height: 36px; background: rgb(182, 232, 252); border-radius: 100%; transform: translate(25%, -25%);">
+        { strconv.Itoa(p.Votes) }
+      </span>
+    </form>
+    }
+  </main>
+  }
 }

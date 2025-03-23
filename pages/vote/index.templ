@@ -7,7 +7,8 @@ import "strconv"
 templ VotePage(prompts []models.Prompt) {
 @layouts.Base("Vote on Prompts") {
   <main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
-    <h1>Jesus vill høre din stemmerett</h1>
+    <h1 style="text-align: center;">Jesus vill høre din stemmerett</h1>
+    <p>Her er 5 tilfeldige spørsmål fra vår menighet, stem fram den du ønsker jesus skal se nærmere på. Etterpå får du noen nye</p>
     for _, p := range prompts {
     <form method="POST" action="/vote"
       style="position: relative; display: flex; gap: 1rem; padding: 2rem; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;">

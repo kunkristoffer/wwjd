@@ -112,7 +112,7 @@ func New() http.Handler {
 	})
 
 	r.Get("/vote", func(w http.ResponseWriter, r *http.Request) {
-		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 10")
+		rows, err := database.DB.Query("SELECT id, question, reply, votes FROM prompts ORDER BY RANDOM() LIMIT 3")
 		if err != nil {
 			http.Error(w, "DB error: "+err.Error(), http.StatusInternalServerError)
 			return

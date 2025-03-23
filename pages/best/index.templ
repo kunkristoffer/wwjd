@@ -6,17 +6,20 @@ import "strconv"
 
 templ BestQuestions(prompts []models.Prompt) {
 	@layouts.Base("Jesus sine top 10") {
-		<main style="max-width: 800px; margin: auto; padding: 2rem;">
+		<main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
 			<h1>Top rangerte spørsmål denne uken</h1>
 			if len(prompts) == 0 {
 				<p>Ingen spørsmål ennå 🥺</p>
 			} else {
-				<ul>
+				<ul style="display: flex; flex-flow: column nowrap; gap: 2rem;">
 					for _, prompt := range prompts {
-						<li style="margin-bottom: 1rem;">
-							<p><strong>Q:</strong> { prompt.Question }</p>
-							<p><strong>A:</strong> { prompt.Reply }</p>
-							<p><small>Stemmer: { strconv.Itoa(prompt.Votes) } | Spurt: { prompt.DateAsked }</small></p>
+						<li style="position: relative; display: flex; flex-flow: column nowrap; gap: 1rem; padding:1rem; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;">
+							<i>{ prompt.Question }</i>
+							<p>{ prompt.Reply }</p>
+							<p style="text-align: center;"><small>Stemmer: { prompt.DateAsked }</small></p>
+              <span style="position: absolute; display: flex; justify-content: center; align-items: center; top: 0; right: 0; width: 36px; height: 36px; background: rgb(182, 232, 252); border-radius: 100%; transform: translate(25%, -25%);">
+                { strconv.Itoa(prompt.Votes) }
+              </span>
 						</li>
 					}
 				</ul>

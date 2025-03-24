@@ -1,0 +1,30 @@
+package newest
+
+import "github.com/kunkristoffer/wwjd/layouts"
+import "github.com/kunkristoffer/wwjd/models"
+import "github.com/kunkristoffer/wwjd/utils"
+import "strconv"
+
+templ NewestQuestions(prompts []models.Prompt) {
+	@layouts.Base("Nyeste spørsmål") {
+		<main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
+			<h1>Nyeste spørsmål til Jesus</h1>
+			if len(prompts) == 0 {
+				<p>Ingen spørsmål ennå 🥺</p>
+			} else {
+				<ul style="display: flex; flex-flow: column nowrap; gap: 2rem;">
+					for _, prompt := range prompts {
+						<li style="position: relative; display: flex; flex-flow: column nowrap; gap: 1rem; padding:1rem; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;">
+							<i>{ prompt.Question }</i>
+							<p>{ prompt.Reply }</p>
+							<p style="text-align: center;"><small>Spurt { utils.TimeAgo(prompt.DateAsked) }</small></p>
+              <span style="position: absolute; display: flex; justify-content: center; align-items: center; top: 0; right: 0; width: 36px; height: 36px; background: rgb(223, 246, 255); border-radius: 100%; transform: translate(25%, -25%);">
+                { strconv.Itoa(prompt.Votes) }
+              </span>
+						</li>
+					}
+				</ul>
+			}
+		</main>
+	}
+}

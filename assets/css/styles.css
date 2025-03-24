@@ -27,3 +27,27 @@ a {
 a:hover {
   color: #4d4d4d;
 }
+
+/* Vote button */
+.vote-button {
+  display: flex;
+  flex-direction: column;
+  background: rgb(223, 246, 255);
+  border: none;
+
+  padding: 8px 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vote-button:hover {
+  background-color: rgb(205, 241, 255);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.vote-emoji {
+  font-size: 1.2rem;
+}

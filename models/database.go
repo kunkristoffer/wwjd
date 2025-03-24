@@ -1,8 +1,10 @@
 package models
 
+import "time"
+
 type Prompt struct {
 	ID        int
-	DateAsked string
+	DateAsked time.Time
 	Question  string
 	Reply     string
 	Votes     int

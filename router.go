@@ -16,6 +16,7 @@ import (
 	"github.com/kunkristoffer/wwjd/pages/best"
 	"github.com/kunkristoffer/wwjd/pages/disclaimer"
 	"github.com/kunkristoffer/wwjd/pages/index"
+	"github.com/kunkristoffer/wwjd/pages/newest"
 	"github.com/kunkristoffer/wwjd/pages/tired"
 	"github.com/kunkristoffer/wwjd/pages/vote"
 	"github.com/kunkristoffer/wwjd/sessions"
@@ -121,6 +122,27 @@ func New() http.Handler {
 			prompts = append(prompts, p)
 		}
 		templ.Handler(best.BestQuestions(prompts)).ServeHTTP(w, r)
+	})
+
+	r.Get("/newest", func(w http.ResponseWriter, r *http.Request) {
+		rows, err := database.DB.Query("SELECT id, date_asked, question, reply, votes FROM prompts ORDER BY date_asked DESC LIMIT 10")
+		if err != nil {
+			http.Error(w, "Database error: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		var prompts []models.Prompt
+		for rows.Next() {
+			var p models.Prompt
+			err := rows.Scan(&p.ID, &p.DateAsked, &p.Question, &p.Reply, &p.Votes)
+			if err != nil {
+				http.Error(w, "Failed to parse row: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			prompts = append(prompts, p)
+		}
+		templ.Handler(newest.NewestQuestions(prompts)).ServeHTTP(w, r)
 	})
 
 	r.Get("/vote", func(w http.ResponseWriter, r *http.Request) {

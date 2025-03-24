@@ -1,14 +1,14 @@
-package best
+package newest
 
 import "github.com/kunkristoffer/wwjd/layouts"
 import "github.com/kunkristoffer/wwjd/models"
 import "github.com/kunkristoffer/wwjd/utils"
 import "strconv"
 
-templ BestQuestions(prompts []models.Prompt) {
-	@layouts.Base("Jesus sine top 10") {
+templ NewestQuestions(prompts []models.Prompt) {
+	@layouts.Base("Nyeste spørsmål") {
 		<main style="max-width: 600px; margin: auto; gap: 2rem; padding: 2rem;">
-			<h1>Top rangerte spørsmål denne uken</h1>
+			<h1>Nyeste spørsmål til Jesus</h1>
 			if len(prompts) == 0 {
 				<p>Ingen spørsmål ennå 🥺</p>
 			} else {

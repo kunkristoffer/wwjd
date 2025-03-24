@@ -9,6 +9,7 @@ primary_region = 'arn'
 [build]
   [build.args]
     GO_VERSION = '1.24'
+    BP_KEEP_FILES = "assets/*:resources/*"
 
 [env]
   PORT = '8080'
